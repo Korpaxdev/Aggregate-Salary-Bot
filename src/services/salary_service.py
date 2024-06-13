@@ -1,8 +1,8 @@
 from datetime import datetime
 
-from services.database_service import DatabaseService
-from utils.pipeline_utils import get_date_pipeline
-from utils.type_utils import By
+from src.services.database_service import DatabaseService
+from src.utils.pipeline_utils import get_date_pipeline
+from src.utils.type_utils import By
 
 
 class SalaryService:

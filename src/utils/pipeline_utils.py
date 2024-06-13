@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from utils.type_utils import By
+from src.utils.type_utils import By
 
 
 def _base_date_pipeline(dt_from: datetime, dt_upto: datetime):

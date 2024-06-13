@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from utils.env_utils import ENV_SETTINGS
+from src.utils.env_utils import ENV_SETTINGS
 
 
 class DatabaseService:
