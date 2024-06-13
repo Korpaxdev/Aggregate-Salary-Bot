@@ -6,4 +6,4 @@ class App:
         self.bot_service = bot_service
 
     async def run(self):
-        return await self.bot_service.bot.polling()
+        await self.bot_service.bot.polling()

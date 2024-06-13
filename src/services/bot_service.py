@@ -23,15 +23,27 @@ class BotService:
             if not message.text:
                 raise ValidationError
             request = RequestModel.model_validate_json(message.text)
-            return await self.bot.reply_to(message, self.__generate_response(request).model_dump_json())
-        except ValidationError:
-            return await self.bot.reply_to(message, INCORRECT_REQUEST)
+            response = await self.__generate_response(request)
+            return await self.bot.reply_to(message, response.model_dump_json())
+        except ValidationError as e:
+            for err in e.errors():
+                if err["type"] == "value_error":
+                    if not err["loc"] or err["loc"][0] in ("dt_upto", "dt_from"):
+                        err_msg = err["msg"] or INCORRECT_REQUEST
+                else:
+                    err_msg = INCORRECT_REQUEST
+                return await self.bot.reply_to(message, err_msg)
 
     def __configure_bot(self):
-        self.bot.message_handler(commands=["start"])(self.__start_handler)
+        self.bot.message_handler(commands=["start", "help"])(self.__start_handler)
         self.bot.message_handler(func=lambda message: True)(self.__text_handler)
 
-    def __generate_response(self, request: RequestModel):
+    async def __generate_response(self, request: RequestModel):
         labels = generate_labels_by(request.dt_from, request.dt_upto, request.group_type)
         dataset = []
+        aggregated_salaries = dict()
+        async for doc in self.__salary_service.get_salaries_by(request.dt_from, request.dt_upto, request.group_type):
+            aggregated_salaries[doc["_id"]] = doc["sum"]
+        for label in labels:
+            dataset.append(aggregated_salaries.get(label, 0))
         return ResponseModel(labels=labels, dataset=dataset)
