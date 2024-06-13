@@ -1,4 +1,3 @@
 from typing import Literal
 
-
-By = Literal["day", "month", "year"]
+By = Literal["month", "day", "hour"]
